@@ -18,7 +18,7 @@ public class PanelDeJuego extends JPanel implements Runnable{
 	//Configuracion de Pantalla
 	final int tamañoPixel = 16;
 	final int escala = 3; 
-	public int nivelActual = 2;
+	public int nivelActual = 1;
 	
 	public final int originalTamañoPixel = tamañoPixel * escala; //Seria de 48 pixeles
 	final int maximoColumna = 16;
@@ -100,12 +100,46 @@ public class PanelDeJuego extends JPanel implements Runnable{
 	}
 	
 	public void actualizar() {
-		jugador.actualizar();
-		for(int i = 0; i < enemigos.length; i++) {
-			if(enemigos[i] != null) {
-				enemigos[i].actualizar();
-			}
-		}
+	    // 1. Mover Jugador
+	    jugador.actualizar();
+
+	    // 2. Gestión de Enemigos
+	    for(int i = 0; i < enemigos.length; i++) {
+	        if(enemigos[i] != null) {
+	            enemigos[i].actualizar();
+	            
+	            // A. DETECTAR MUERTE (Choque de Hitboxes)
+	            // Creamos rectángulos temporales en la posición absoluta del mundo
+	            java.awt.Rectangle rJugador = new java.awt.Rectangle(
+	                jugador.mundoX + jugador.areaSolida.x, 
+	                jugador.mundoY + jugador.areaSolida.y, 
+	                jugador.areaSolida.width, jugador.areaSolida.height
+	            );
+	            
+	            java.awt.Rectangle rEnemigo = new java.awt.Rectangle(
+	                enemigos[i].mundoX + enemigos[i].areaSolida.x, 
+	                enemigos[i].mundoY + enemigos[i].areaSolida.y, 
+	                enemigos[i].areaSolida.width, enemigos[i].areaSolida.height
+	            );
+
+	            if(rJugador.intersects(rEnemigo)) {
+	                System.out.println("💀 ¡El Troll te ha matado!");
+	                jugador.defaults(); // Reiniciar posición
+	                // Opcional: Restar vida aquí
+	            }
+	        }
+	    }
+	    
+	    // 3. DETECTAR VICTORIA
+	    int frutasRestantes = 0;
+	    for(int i = 0; i < obj.length; i++) {
+	        if(obj[i] != null) frutasRestantes++;
+	    }
+	    
+	    if(frutasRestantes == 0) {
+	        System.out.println("🏆 ¡Nivel Completado!");
+	        avanzarSiguienteNivel();
+	    }
 	}
 	
 	@Override 
