@@ -93,46 +93,45 @@ public void almacenar(int i) {
     }
 
 	
-	public void actualizar() {
-	    
-	    // Cambiar dirección SOLO si la tecla está presionada
-	    if (tecla.arriba) {
-	        direccion = "arriba";
-	    }
-	    else if (tecla.abajo) {
-	        direccion = "abajo";
-	    }
-	    else if (tecla.izquierda) {
-	        direccion = "izquierda";
-	    }
-	    else if (tecla.derecha) {
-	        direccion = "derecha";
-	    }
+public void actualizar() {
+    
+    // Detección de teclas (Igual que antes)
+    if (tecla.arriba) direccion = "arriba";
+    else if (tecla.abajo) direccion = "abajo";
+    else if (tecla.izquierda) direccion = "izquierda";
+    else if (tecla.derecha) direccion = "derecha";
 
-	    // SOLO mover si ALGUNA tecla está presionada
-	    if (tecla.arriba || tecla.abajo || tecla.izquierda || tecla.derecha) {
+    if (tecla.arriba || tecla.abajo || tecla.izquierda || tecla.derecha) {
 
-	        //Check Colision
-	        colisionOn = false;
-	        panelJuego.colision.check(this);
+        // 1. Chequear Colisión con Paredes
+        colisionOn = false;
+        panelJuego.colision.check(this);
 
-	        if(!colisionOn) {
-	            switch(direccion) {
-	            case "arriba": mundoY -= velocidad; break;
-	            case "abajo": mundoY += velocidad; break;
-	            case "izquierda": mundoX -= velocidad; break;
-	            case "derecha": mundoX += velocidad; break;
-	            }
-	        }
+        // 2. ¡NUEVO! Chequear Colisión con Objetos (Frutas)
+        // Esto detecta si tocas algo y devuelve su índice (o 999 si nada)
+        int objIndex = panelJuego.colision.checkObjeto(this, true);
+        
+        // 3. ¡NUEVO! Cobrar la fruta
+        almacenar(objIndex);
 
-	        // Animación
-	        count++;
-	        if(count > 12) {
-	            numeroSprite = (numeroSprite == 1 ? 2 : 1);
-	            count = 0;
-	        }
-	    }
-	}
+        // 4. Mover si no hay pared
+        if(!colisionOn) {
+            switch(direccion) {
+            case "arriba": mundoY -= velocidad; break;
+            case "abajo": mundoY += velocidad; break;
+            case "izquierda": mundoX -= velocidad; break;
+            case "derecha": mundoX += velocidad; break;
+            }
+        }
+
+        // Animación
+        count++;
+        if(count > 12) {
+            numeroSprite = (numeroSprite == 1 ? 2 : 1);
+            count = 0;
+        }
+    }
+}
 
 	
 	public void dibujo(Graphics2D graficos2D) {
