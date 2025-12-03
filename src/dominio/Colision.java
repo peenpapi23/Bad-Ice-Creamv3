@@ -10,7 +10,7 @@ public class Colision {
         this.panel = panel;
     }
 
-    // Método para colisiones con paredes (YA LO TENÍAS)
+    // --- MÉTODO 1: Chequear paredes (Ya lo tenías) ---
     public void check(Entidad entidad) {
 
         int izquierda = entidad.mundoX + entidad.areaSolida.x;
@@ -61,33 +61,45 @@ public class Colision {
         }
     }
 
-    // Método para colisiones con objetos/frutas (EL NUEVO)
-  public int checkObjeto(Entidad entidad, boolean jugador) {
-    int index = 999;
-    for(int i = 0; i < panel.obj.length; i++) {
-        if(panel.obj[i] != null) {
-            entidad.areaSolida.x = entidad.mundoX + entidad.areaSolida.x;
-            entidad.areaSolida.y = entidad.mundoY + entidad.areaSolida.y;
-            panel.obj[i].areaSolida.x = panel.obj[i].mundoX + panel.obj[i].areaSolida.x;
-            panel.obj[i].areaSolida.y = panel.obj[i].mundoY + panel.obj[i].areaSolida.y;
-            
-            switch(entidad.direccion) {
-            case "arriba": entidad.areaSolida.y -= entidad.velocidad; break;
-            case "abajo": entidad.areaSolida.y += entidad.velocidad; break;
-            case "izquierda": entidad.areaSolida.x -= entidad.velocidad; break;
-            case "derecha": entidad.areaSolida.x += entidad.velocidad; break;
+    // --- MÉTODO 2: Chequear Frutas/Objetos (EL QUE ACABAS DE PEGAR) ---
+    public int checkObjeto(Entidad entidad, boolean jugador) {
+        int index = 999;
+        
+        for(int i = 0; i < panel.obj.length; i++) {
+            if(panel.obj[i] != null) {
+                // 1. Obtener posición de entidad
+                entidad.areaSolida.x = entidad.mundoX + entidad.areaSolida.x;
+                entidad.areaSolida.y = entidad.mundoY + entidad.areaSolida.y;
+                
+                // 2. Obtener posición del objeto
+                panel.obj[i].areaSolida.x = panel.obj[i].mundoX + panel.obj[i].areaSolida.x;
+                panel.obj[i].areaSolida.y = panel.obj[i].mundoY + panel.obj[i].areaSolida.y;
+                
+                switch(entidad.direccion) {
+                case "arriba": entidad.areaSolida.y -= entidad.velocidad; break;
+                case "abajo": entidad.areaSolida.y += entidad.velocidad; break;
+                case "izquierda": entidad.areaSolida.x -= entidad.velocidad; break;
+                case "derecha": entidad.areaSolida.x += entidad.velocidad; break;
+                }
+                
+                // 3. Verificar si se tocan
+                if(entidad.areaSolida.intersects(panel.obj[i].areaSolida)) {
+                    if(panel.obj[i].colision) {
+                        entidad.colisionOn = true;
+                    }
+                    if(jugador) {
+                        index = i;
+                    }
+                }
+                
+                // 4. Resetear posiciones (¡Muy Importante!)
+                entidad.areaSolida.x = entidad.areaSolidaX;
+                entidad.areaSolida.y = entidad.areaSolidaY;
+                panel.obj[i].areaSolida.x = panel.obj[i].areaSolidaX;
+                panel.obj[i].areaSolida.y = panel.obj[i].areaSolidaY;
             }
-            
-            if(entidad.areaSolida.intersects(panel.obj[i].areaSolida)) {
-                if(panel.obj[i].colision) entidad.colisionOn = true;
-                if(jugador) index = i;
-            }
-            entidad.areaSolida.x = entidad.areaSolidaX;
-            entidad.areaSolida.y = entidad.areaSolidaY;
-            panel.obj[i].areaSolida.x = panel.obj[i].areaSolidaX;
-            panel.obj[i].areaSolida.y = panel.obj[i].areaSolidaY;
         }
+        return index;
     }
-    return index;
-}
+
 }
