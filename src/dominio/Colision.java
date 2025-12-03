@@ -62,58 +62,32 @@ public class Colision {
     }
 
     // Método para colisiones con objetos/frutas (EL NUEVO)
-    public int checkObjeto(Entidad entidad, boolean jugador) {
-        
-        int index = 999;
-        
-        // Verificamos si panel.obj es accesible. 
-        // Si te da error aquí, es porque no tienes acceso a 'obj' en PanelDeJuego.
-        // Asegúrate que en PanelDeJuego.java sea: public SuperObjeto obj[] = ...
-        
-        for(int i = 0; i < panel.obj.length; i++) {
+  public int checkObjeto(Entidad entidad, boolean jugador) {
+    int index = 999;
+    for(int i = 0; i < panel.obj.length; i++) {
+        if(panel.obj[i] != null) {
+            entidad.areaSolida.x = entidad.mundoX + entidad.areaSolida.x;
+            entidad.areaSolida.y = entidad.mundoY + entidad.areaSolida.y;
+            panel.obj[i].areaSolida.x = panel.obj[i].mundoX + panel.obj[i].areaSolida.x;
+            panel.obj[i].areaSolida.y = panel.obj[i].mundoY + panel.obj[i].areaSolida.y;
             
-            if(panel.obj[i] != null) {
-                
-                // Get entidad solid area position
-                entidad.areaSolida.x = entidad.mundoX + entidad.areaSolidaX;
-                entidad.areaSolida.y = entidad.mundoY + entidad.areaSolidaY;
-                
-                // Get object solid area position
-                panel.obj[i].areaSolida.x = panel.obj[i].mundoX + panel.obj[i].areaSolidaX;
-                panel.obj[i].areaSolida.y = panel.obj[i].mundoY + panel.obj[i].areaSolidaY;
-                
-                switch(entidad.direccion) {
-                case "arriba":
-                    entidad.areaSolida.y -= entidad.velocidad;
-                    break;
-                case "abajo":
-                    entidad.areaSolida.y += entidad.velocidad;
-                    break;
-                case "izquierda":
-                    entidad.areaSolida.x -= entidad.velocidad;
-                    break;
-                case "derecha":
-                    entidad.areaSolida.x += entidad.velocidad;
-                    break;
-                }
-                
-                if(entidad.areaSolida.intersects(panel.obj[i].areaSolida)) {
-                    if(panel.obj[i].colision == true) {
-                        entidad.colisionOn = true;
-                    }
-                    if(jugador == true) {
-                        index = i;
-                    }
-                }
-                
-                // Resetear valores
-                entidad.areaSolida.x = entidad.areaSolidaX;
-                entidad.areaSolida.y = entidad.areaSolidaY;
-                panel.obj[i].areaSolida.x = panel.obj[i].areaSolidaX;
-                panel.obj[i].areaSolida.y = panel.obj[i].areaSolidaY;
+            switch(entidad.direccion) {
+            case "arriba": entidad.areaSolida.y -= entidad.velocidad; break;
+            case "abajo": entidad.areaSolida.y += entidad.velocidad; break;
+            case "izquierda": entidad.areaSolida.x -= entidad.velocidad; break;
+            case "derecha": entidad.areaSolida.x += entidad.velocidad; break;
             }
+            
+            if(entidad.areaSolida.intersects(panel.obj[i].areaSolida)) {
+                if(panel.obj[i].colision) entidad.colisionOn = true;
+                if(jugador) index = i;
+            }
+            entidad.areaSolida.x = entidad.areaSolidaX;
+            entidad.areaSolida.y = entidad.areaSolidaY;
+            panel.obj[i].areaSolida.x = panel.obj[i].areaSolidaX;
+            panel.obj[i].areaSolida.y = panel.obj[i].areaSolidaY;
         }
-        
-        return index;
     }
+    return index;
+}
 }
